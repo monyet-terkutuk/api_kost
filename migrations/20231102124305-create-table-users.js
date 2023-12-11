@@ -23,7 +23,7 @@ module.exports = {
         allowNull: true,
       },
       phone: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       address: {
@@ -33,6 +33,11 @@ module.exports = {
       image_profile: {
         type: Sequelize.STRING,
         allowNull: true,
+      },
+      role: {
+        type: Sequelize.ENUM("user", "owner", "admin"), // Tambahkan ENUM untuk tipe role
+        allowNull: false,
+        defaultValue: "user",
       },
       created_at: {
         type: Sequelize.DATE,
