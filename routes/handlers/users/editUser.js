@@ -1,7 +1,7 @@
-require("dotenv").config();
-const { User } = require("../../../models");
 const bcrypt = require("bcrypt");
+const connection = require("../../../config/db");
 const Validator = require("fastest-validator");
+require("dotenv").config();
 
 const v = new Validator();
 
@@ -16,8 +16,7 @@ const userSchema = {
 module.exports = async (req, res) => {
   const { body, file } = req;
 
-  // Tambahkan validasi untuk ID pengguna
-  const userId = req.params.id; // Pastikan Anda mengirim ID pengguna dalam URL atau request
+  const userId = req.params.id;
 
   const validationResponse = v.validate(body, userSchema);
 
@@ -32,10 +31,18 @@ module.exports = async (req, res) => {
     });
   }
 
-  try {
-    let user = await User.findByPk(userId); // Temukan pengguna berdasarkan ID
+  const selectUserQuery = `SELECT * FROM users WHERE id = ${userId}`;
 
-    if (!user) {
+  connection.query(selectUserQuery, async (error, results) => {
+    if (error) {
+      return res.status(500).json({
+        code: 500,
+        status: "error",
+        data: error.message,
+      });
+    }
+
+    if (results.length === 0) {
       return res.status(404).json({
         code: 404,
         status: "error",
@@ -45,29 +52,39 @@ module.exports = async (req, res) => {
       });
     }
 
-    // Update data pengguna berdasarkan field yang dikirim dalam body
-    user = await user.update({
-      ...body,
-      image_profile: file ? file.filename : user.image_profile, // Menggunakan file lama jika file baru tidak diunggah
+    let user = results[0];
+
+    const updateFields = {
+      name: body.name || user.name,
+      email: body.email || user.email,
+      phone: body.phone || user.phone,
+      address: body.address || user.address,
+      image_profile: file ? file.filename : user.image_profile,
       password: body.password
         ? bcrypt.hashSync(body.password, 10)
-        : user.password, // Hash password baru jika ada
-    });
+        : user.password,
+    };
 
-    return res.json({
-      code: 200,
-      status: "success",
-      data: {
-        name: user.name,
-        email: user.email,
-        image_profile: user.image_profile,
-      },
+    const updateUserQuery = `UPDATE users SET ? WHERE id = ${userId}`;
+
+    connection.query(updateUserQuery, updateFields, (error, updatedUser) => {
+      if (error) {
+        return res.status(500).json({
+          code: 500,
+          status: "error",
+          data: error.message,
+        });
+      }
+
+      return res.json({
+        code: 200,
+        status: "success",
+        data: {
+          name: updateFields.name,
+          email: updateFields.email,
+          image_profile: updateFields.image_profile,
+        },
+      });
     });
-  } catch (error) {
-    return res.status(500).json({
-      code: 500,
-      status: "error",
-      data: error.message,
-    });
-  }
+  });
 };

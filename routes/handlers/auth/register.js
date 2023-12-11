@@ -1,7 +1,7 @@
-require("dotenv").config();
-const { User } = require("../../../models");
 const bcrypt = require("bcrypt");
 const Validator = require("fastest-validator");
+require("dotenv").config();
+const connection = require("../../../config/db");
 
 const v = new Validator();
 
@@ -29,40 +29,49 @@ module.exports = async (req, res) => {
     });
   }
 
-  const isEmailUsed = await User.findOne({
-    where: { email: body.email },
+  const checkEmailQuery = `SELECT * FROM users WHERE email = '${body.email}'`;
+  connection.query(checkEmailQuery, async (error, results) => {
+    if (error) {
+      return res.status(500).json({
+        code: 500,
+        status: "error",
+        data: error.message,
+      });
+    }
+
+    if (results.length > 0) {
+      return res.status(400).json({
+        code: 400,
+        status: "error",
+        data: {
+          error: "Email has been used",
+        },
+      });
+    }
+
+    const password = bcrypt.hashSync(body.password, 10);
+    const createUserQuery = `
+      INSERT INTO users (name, email, password, phone, address)
+      VALUES ('${body.name}', '${body.email}', '${password}', '${body.phone}', '${body.address}')
+    `;
+
+    connection.query(createUserQuery, (error, results) => {
+      if (error) {
+        return res.status(500).json({
+          code: 500,
+          status: "error",
+          data: error.message,
+        });
+      }
+
+      return res.json({
+        code: 200,
+        status: "success",
+        data: {
+          name: body.name,
+          email: body.email,
+        },
+      });
+    });
   });
-
-  if (isEmailUsed) {
-    return res.status(400).json({
-      code: 400,
-      status: "error",
-      data: {
-        error: "Email has been used",
-      },
-    });
-  }
-
-  const password = bcrypt.hashSync(body.password, 10);
-
-  try {
-    const user = await User.create({
-      ...body,
-      password,
-    });
-    return res.json({
-      code: 200,
-      status: "success",
-      data: {
-        name: user.name,
-        email: user.email,
-      },
-    });
-  } catch (error) {
-    return res.status(500).json({
-      code: 500,
-      status: "error",
-      data: error.message,
-    });
-  }
 };

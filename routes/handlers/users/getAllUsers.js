@@ -1,18 +1,40 @@
-const { User } = require("../../../models");
+require("dotenv").config();
+const connection = require("../../../config/db");
 
-// Get all users data
 module.exports = async (req, res) => {
-  const users = await User.findAll({
-    // attributes: ["name", "email"], (perintah ini di gunakan untuk memfilter data yg akan ditampilkan)
-    attributes: { exclude: ["password"] }, // ini untuk filter juga tapi yg di tulis tidak akan di tampilkan
-  });
+  try {
+    const selectUsersQuery =
+      "SELECT id, name, email, phone, address FROM users";
 
-  return res.json({
-    meta: {
-      message: "Get all users successfully",
-      code: 200,
-      status: "success",
-    },
-    data: users,
-  });
+    connection.query(selectUsersQuery, (error, results) => {
+      if (error) {
+        return res.status(500).json({
+          meta: {
+            message: "Failed to get users",
+            code: 500,
+            status: "error",
+          },
+          data: error.message,
+        });
+      }
+
+      return res.json({
+        meta: {
+          message: "Get all users successfully",
+          code: 200,
+          status: "success",
+        },
+        data: results,
+      });
+    });
+  } catch (error) {
+    return res.status(500).json({
+      meta: {
+        message: "Failed to get users",
+        code: 500,
+        status: "error",
+      },
+      data: error.message,
+    });
+  }
 };
