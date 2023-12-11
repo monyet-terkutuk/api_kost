@@ -8,10 +8,10 @@ module.exports = async (req, res, next) => {
     return res.status(403).json({
       meta: {
         message: "Token is missing",
-        code: 403,
+        code: 403, // Ubah kode status menjadi 403 (Forbidden)
         status: "error",
       },
-      data: "You are not authorized to access this data.",
+      data: "You are not authorized to access this data.", // Pesan lebih deskriptif
     });
   }
 
@@ -43,9 +43,7 @@ module.exports = async (req, res, next) => {
         data: "Not found",
       });
     }
-
-    // Menyimpan user_id ke dalam req
-    req.user_id = user.id;
+    req.user = user;
 
     next();
   } catch (error) {
