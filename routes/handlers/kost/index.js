@@ -1,4 +1,6 @@
 exports.createKost = require("./createKost");
-// exports.getAllUsers = require("./getAllUsers");
-// exports.updateUser = require("./editUser");
-// exports.deleteUser = require("./deleteUser");
+exports.getAllKost = require("./getAllKost");
+exports.updateKost = require("./editKost");
+exports.deleteKost = require("./deleteKost");
+exports.getDetailKost = require("./getDetailKost");
+exports.uploadImageKost = require("./uploadImage");

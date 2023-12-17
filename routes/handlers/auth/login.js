@@ -60,7 +60,7 @@ module.exports = async (req, res) => {
       role: user.role,
     };
 
-    const secret = process.env.JWT_SECRET;
+    const secret = "confidentialdata";
     const expiresIn = "1h"; // Use "1h" for 1 hour expiration
 
     const token = jwt.sign(payload, secret, { expiresIn });

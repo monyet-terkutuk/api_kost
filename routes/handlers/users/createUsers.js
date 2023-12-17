@@ -12,6 +12,7 @@ const userSchema = {
   address: { type: "string" },
   role: { type: "string", enum: ["admin", "owner", "user"] },
 };
+
 module.exports = async (req, res) => {
   const { body, file } = req;
 

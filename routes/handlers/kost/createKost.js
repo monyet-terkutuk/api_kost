@@ -1,5 +1,4 @@
 const { Kost } = require("../../../models");
-const { User } = require("../../../models"); // Import model User jika belum diimport
 const Validator = require("fastest-validator");
 const v = new Validator();
 
@@ -14,13 +13,12 @@ const kostSchema = {
   peraturan_kost: { type: "string" },
   status: { type: "string" },
   kategori_kost: { type: "string" },
-  harga: { type: "number", integer: true },
-  imb: { type: "string" },
-  user_id: { type: "number", integer: true },
+  // harga: { type: "number", integer: true },
+  harga: { type: "string" },
 };
 
 module.exports = async (req, res) => {
-  const { body } = req;
+  const { body, file } = req;
 
   const validationResponse = v.validate(body, kostSchema);
 
@@ -36,19 +34,10 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // Cek apakah user_id yang diberikan valid
-    const existingUser = await User.findByPk(body.user_id);
-    if (!existingUser) {
-      return res.status(400).json({
-        code: 400,
-        status: "error",
-        data: {
-          error: "User not found",
-        },
-      });
-    }
+    body.harga = parseFloat(body.harga);
+    body.user_id = req.user.id;
 
-    const kost = await Kost.create(body);
+    const kost = await Kost.create({ ...body, imb: file.filename });
     return res.status(200).json({
       code: 200,
       status: "success",

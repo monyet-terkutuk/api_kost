@@ -19,6 +19,11 @@ module.exports = {
           onDelete: "CASCADE", // Adjust deletion action as needed
         },
       },
+      utama: {
+        type: Sequelize.BOOLEAN, // Fix the typo here
+        allowNull: false,
+        defaultValue: false,
+      },
       gambar: {
         type: Sequelize.STRING, // Adjust data type as required (e.g., TEXT, BLOB)
         allowNull: false,

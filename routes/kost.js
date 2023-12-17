@@ -1,16 +1,23 @@
 const express = require("express");
 const router = express.Router();
-const userHandler = require("./handlers/kost");
+const kostHandler = require("./handlers/kost");
 const uploadImage = require("../middleware/uploadImage");
+const verify = require("../middleware/verify-token");
 
-router.get("/", userHandler.getAllUsers);
-router.post(
-  "/",
-  uploadImage.array("images", 10),
-  uploadImage.single("images"),
-  userHandler.createKost
+router.get("/", kostHandler.getAllKost);
+router.get("/:kostId", verify, kostHandler.getDetailKost); // Place more specific routes before generic ones
+router.post("/", verify, uploadImage.single("imb"), kostHandler.createKost);
+router.put(
+  "/:kostId",
+  verify,
+  uploadImage.single("imb"),
+  kostHandler.updateKost
 );
-router.put("/:id", uploadImage.single("image_profile"), userHandler.updateUser);
-router.delete("/:id", userHandler.deleteUser);
+router.delete("/:kostId", verify, kostHandler.deleteKost);
+router.post(
+  "/upload/:kostId",
+  uploadImage.single("image"),
+  kostHandler.uploadImageKost
+);
 
 module.exports = router;

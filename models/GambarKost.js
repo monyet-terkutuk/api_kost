@@ -24,6 +24,11 @@ module.exports = (sequelize) => {
           onDelete: "CASCADE",
         },
       },
+      utama: {
+        type: DataTypes.BOOLEAN, // Fix the typo here
+        allowNull: false,
+        defaultValue: false,
+      },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,

@@ -10,7 +10,7 @@ module.exports = {
         allowNull: false,
       },
       gambar: {
-        type: Sequelize.STRING, // You may adjust the data type according to your needs (e.g., Sequelize.TEXT, Sequelize.BLOB)
+        type: Sequelize.STRING,
         allowNull: false,
       },
       kost_id: {
@@ -22,6 +22,11 @@ module.exports = {
           onUpdate: "CASCADE",
           onDelete: "CASCADE",
         },
+      },
+      utama: {
+        type: Sequelize.BOOLEAN, // Fix the typo here
+        allowNull: false,
+        defaultValue: false,
       },
       created_at: {
         type: Sequelize.DATE,

@@ -5,7 +5,7 @@ const uploadImage = require("../middleware/uploadImage");
 const verify = require("../middleware/verify-token");
 
 // Get all users data
-router.get("/", userHandler.getAllUsers);
+router.get("/", verify, userHandler.getAllUsers);
 router.post("/", userHandler.createUser);
 router.put(
   "/:id",

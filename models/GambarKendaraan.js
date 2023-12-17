@@ -18,6 +18,11 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING, // Sesuaikan tipe data berdasarkan kebutuhan Anda (misalnya: DataTypes.TEXT, DataTypes.BLOB)
         allowNull: false,
       },
+      utama: {
+        type: DataTypes.BOOLEAN, // Fix the typo here
+        allowNull: false,
+        defaultValue: false,
+      },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,
